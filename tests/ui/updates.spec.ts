@@ -124,6 +124,13 @@ test("update installation protects unsaved work and recovers from failed downloa
   );
   await page.keyboard.insertText("<?php echo 3; ?>");
   await expect(page.locator(".unsaved-dot")).toHaveClass(/dirty/);
+  expect(
+    await page.evaluate(
+      () =>
+        window.testCalls.indexOf("prepare_update") <
+        window.testCalls.indexOf("plugin:updater|install"),
+    ),
+  ).toBe(true);
   await page.evaluate(() => {
     window.testFailure = "signature verification failed";
   });

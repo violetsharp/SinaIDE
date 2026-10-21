@@ -3,6 +3,11 @@ mod tools;
 mod workspace;
 use tauri::Manager;
 #[tauri::command]
+fn prepare_update(processes: tauri::State<processes::Processes>) {
+    // Windows updater installation exits directly, without the normal Tauri Exit event.
+    processes.shutdown();
+}
+#[tauri::command]
 fn restart_app(app: tauri::AppHandle) {
     app.state::<processes::Processes>().shutdown();
     app.restart();
@@ -16,6 +21,7 @@ pub fn run() {
         .manage(processes::Processes::default())
         .invoke_handler(tauri::generate_handler![
             restart_app,
+            prepare_update,
             tools::check_web_tools,
             workspace::open_workspace,
             workspace::read_directory,

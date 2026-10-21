@@ -260,6 +260,32 @@ try {
     await page.keyboard.press("Enter");
     await expect(page.getByLabel("Find in your project")).toBeVisible();
   });
+  await check("update preparation stops owned tools", async () => {
+    const server = await import("node:net");
+    const reserve = server.createServer();
+    await new Promise((resolve) => reserve.listen(0, "127.0.0.1", resolve));
+    const port = reserve.address().port;
+    await new Promise((resolve) => reserve.close(resolve));
+    await invoke("start_process", {
+      executable: "php",
+      args: ["-S", `127.0.0.1:${port}`, "-t", "."],
+      cwd: "",
+      mode: "task",
+    });
+    const reachable = async () => {
+      try {
+        await fetch(`http://127.0.0.1:${port}/`, {
+          signal: AbortSignal.timeout(1500),
+        });
+        return true;
+      } catch {
+        return false;
+      }
+    };
+    await expect.poll(reachable, { timeout: 10000 }).toBe(true);
+    await invoke("prepare_update");
+    await expect.poll(reachable, { timeout: 10000 }).toBe(false);
+  });
   expect(errors).toEqual([]);
   await page.screenshot({
     path: path.join(artifactDir, "sinaide-workspace.png"),

@@ -170,6 +170,7 @@ export default function Updates({
               void perform(async () => {
                 if (!(await beforeInstall())) return;
                 try {
+                  await native("prepare_update");
                   await update.current!.install();
                   setInstalled(true);
                   setStatus("Installed. Restart to open your updated studio.");
