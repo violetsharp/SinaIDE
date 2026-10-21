@@ -37,6 +37,12 @@ The first prototype uses illustrative sample content so the visual system can be
 
 Target platforms: **Windows and macOS**.
 
+## Implementation roadmap and ChatGPT Work
+
+The detailed, phased implementation contract is in [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md). It covers the native folder picker and safe file operations, Monaco, persistent workspace, project search, terminal/process runner, Git, LSP, DAP debugging, diagnostics, testing, security, and acceptance criteria.
+
+When using ChatGPT Work to implement features, start with [docs/CHATGPT_WORK_BRIEF.md](docs/CHATGPT_WORK_BRIEF.md). It tells the agent what to inspect, the project-specific priorities (SinaIDE, Aetherband, and JigsawStudio), how to work incrementally, what not to fake, and what evidence to report. Work one phase at a time and keep changes on a feature branch until reviewed.
+
 ## Repository map
 
 ```text
