@@ -6,6 +6,24 @@
 > Current stack: Tauri 2, Rust, React, TypeScript, Vite.  
 > Product identity: an expressive, maximal, experimental creative IDE—not a corporate IDE with a decorative skin.
 
+## Current implementation checkpoint (0.2)
+
+The user requested a broad personal-use IDE build with HTML/CSS/PHP/PostgreSQL as the PAP priority. The `feat/personal-ide-workspace` branch extends the existing filesystem slice and adds the core editor/tools and installers while retaining the studio identity. This checkpoint does not mark every phase below complete.
+
+| Phase | Current evidence / remaining work |
+|---|---|
+| 0–1 filesystem | Native picker, scoped paths, guarded UTF-8 reads, atomic saves, dirty prompts, create/rename/recovery operations implemented; Windows tests pass. Explicit tree refresh; macOS runtime still unverified. |
+| 2 editor | Monaco, models/tabs, view state, dirty/save/close and core editing implemented. No crash recovery for unsaved edits. |
+| 3 personal workspace | Notebook, name, three themes, validated settings, panel size/side controls, quiet/reduced motion and searchable command palette implemented. Free dragging remains open. |
+| 4 search | Cancellable literal and filename search, ignores/exclusions, previews and limits implemented. Regex and live indexing remain open. |
+| 5 tools | Real multi-session PTY and structured tasks implemented; PHP server/lint and PostgreSQL presets. Persistent task configs and full environment editor remain open. |
+| 6 Git | Status/branch/diff/stage/unstage/commit implemented; destructive and remote UI operations omitted. |
+| 7 LSP | Explicit external stdio server with diagnostics/hover/plain completion/definition; transport failure tests. Real PHP server compatibility, references and richer edits remain open. |
+| 8 DAP | Explicit external adapter, launch/breakpoints/stepping/stack/scopes/variables; protocol tests. Actual adapter programs, attach/watch/conditions and PHP Xdebug integration remain unverified. |
+| 9 quality | Unit tests, browser regression checks, Windows native/PHP/PostgreSQL smoke and cross-platform CI/installer workflow added. Signed distribution, Mac hardware, profiling and upgrade testing remain open. |
+
+See [VERIFICATION.md](VERIFICATION.md), [PHP_POSTGRES.md](PHP_POSTGRES.md), and [INSTALLERS.md](INSTALLERS.md). Do not describe this checkpoint as every acceptance criterion below being fulfilled.
+
 ## Mission
 
 Turn the existing visual prototype into a dependable, usable desktop development environment without flattening its unusual creative identity. Implement features incrementally, validate each slice, preserve the current Tauri/Rust + React/TypeScript architecture unless a concrete technical reason requires a change, and never describe mocked UI as implemented functionality.

@@ -4,7 +4,7 @@
 
 SinaIDE is a personal desktop IDE built around one central idea: **an IDE does not have to look or behave like every other IDE**. It should feel like a tiny world that belongs to its creator—not a corporate tool wearing a colorful theme.
 
-The project is at an early foundation/prototype stage. The current goal is to build a distinctive desktop shell and a modular architecture that can grow into a genuinely useful development environment.
+SinaIDE 0.2 is a working desktop development workspace for personal projects, with an initial focus on HTML, CSS, PHP and PostgreSQL. The editor, filesystem, search, terminal, task runner and Git operations are real. It is still an early application: advanced language tooling and debugging need configured external tools, and macOS installation must be validated separately.
 
 ## Design manifesto
 
@@ -26,16 +26,19 @@ The first shell is a little desktop studio with movable objects:
 - **Console** — build output and, later, a real integrated terminal
 - **World menu** — workspace and appearance controls
 
-The first prototype uses illustrative sample content so the visual system can be explored before all IDE features are wired up. Mock UI is not to be described as functional filesystem/editor/terminal integration.
+The File Garden opens a real folder. The Workbench uses Monaco with separate document buffers, undo/redo and syntax support. The pocket notebook, atmosphere and panel sizes stay on this computer. The Basement starts only the tools you choose. The original studio palette, playful objects, serif headings and local fonts are retained; quiet mode provides more room for code.
 
 ## Technology
 
 - **Rust** for native application logic and future filesystem, process, indexing, and language-tool services.
 - **Tauri 2** for the desktop shell and a narrow, typed IPC boundary.
 - **React + TypeScript + Vite** for the expressive interface.
-- **Monaco Editor** is a planned MIT-licensed editor component; it is not yet integrated in the initial shell.
+- **Monaco Editor** provides the code editor, find/replace, undo/redo, syntax and built-in web language tooling.
+- **xterm.js + portable-pty** provide real interactive terminal sessions.
 
-Target platforms: **Windows and macOS**.
+Target platforms: **Windows and macOS**. Keep Rust for native work and TypeScript for the UI; no stack migration is needed to improve this workflow.
+
+For the PAP stack, start with [PHP + PostgreSQL setup](docs/PHP_POSTGRES.md). See [Windows and macOS installers](docs/INSTALLERS.md) for setup EXE and universal DMG builds.
 
 ## Implementation roadmap and ChatGPT Work
 
@@ -47,14 +50,17 @@ When using ChatGPT Work to implement features, start with [docs/CHATGPT_WORK_BRI
 
 ```text
 src/                       React interface
-  App.tsx                  Initial desktop workspace
+  App.tsx                  Studio shell and protected document workflow
   main.tsx                 Frontend entry point
   styles.css               Design tokens, objects, and responsive styling
 src-tauri/
   Cargo.toml               Rust/Tauri dependencies
   tauri.conf.json          Tauri app configuration
   src/
-    lib.rs                 Native commands and application setup
+    lib.rs                 Application setup and command registration
+    workspace.rs           Scoped files, revision checks and search
+    processes.rs           PTYs, tasks, stdio protocols and Git
+    tools.rs               PHP/PostgreSQL tool discovery
     main.rs                Desktop entry point
 ```
 
@@ -97,34 +103,43 @@ Planned candidates must be checked individually before integration. Monaco Edito
 
 See [DEPENDENCIES.md](DEPENDENCIES.md) for the initial reuse policy.
 
-## Current status
+## Current status — 0.2 development build
 
-**Foundation prototype — in progress.**
+Implemented:
 
-- [x] Initial product and design direction documented
-- [x] Tauri 2 + Rust + React + TypeScript scaffold
-- [x] First expressive desktop-shell prototype
-- [x] Filesystem-backed File Garden (enter a local folder path; browse directories)
-- [x] Basic text editor with open, dirty-state tracking, and save for existing files
-- [ ] Native folder picker and create/rename/delete file operations
-- [ ] Monaco editor integration
-- [ ] Persistent, draggable/resizable workspace objects
-- [ ] Real terminal/process integration
-- [ ] Persisted workspace layout, theme, and preferences
-- [ ] LSP, search, and Git integrations
+- Native folder picker, project-relative file tree, refresh and hidden-file control.
+- Create files/folders, rename closed documents and put items into a recoverable `.sinaide/` folder. No recursive permanent deletion.
+- Monaco tabs with independent buffers, view state, syntax, find/replace, undo/redo, save, save all and save a copy.
+- Dirty prompts before document close, project switch and native app close. Failed saves preserve edits.
+- Atomic file replacement with content-revision checks for external edits. Files must be UTF-8, non-binary and at most 2 MiB. External editors are not locked: a very small final check/replace race remains.
+- Search for filenames or literal content with ignore rules, exclusions, cancellation and result/size limits. No external symlink traversal.
+- Personal name, notebook, three atmospheres, panel dimensions/side swapping, reduced motion and quiet workspace; versioned preferences with blocked-storage fallback.
+- Searchable keyboard command palette. Save, save all, close/next/previous tab and project search shortcuts.
+- Multiple real PTY terminals and structured task sessions with output, exit status, timing and stop controls. Argument arrays and a validated working folder; nothing executes on project open.
+- PHP server/lint presets, local website preview, PHP/PDO PostgreSQL checks and explicit per-process Windows extension flags; PostgreSQL through `psql` without storing passwords.
+- Git status, branch, working/staged diffs, stage/unstage and commit. Hooks are disabled. No destructive Git controls.
+- Configurable stdio LSP foundation: diagnostics, hover, plain-text completion and definition navigation. Configurable DAP foundation: launch, breakpoints, stepping, call stack and variables. These require user-installed compatible servers/adapters and are not a promise of verified PHP/Xdebug or universal debugger support.
+- Windows NSIS installer and native Windows/macOS CI installer builds. Unsigned development artifacts; no automatic public release or updater.
 
-The checked items describe the starter scaffold, not a release-ready IDE.
+Not implemented or not fully verified:
 
+- Freely floating/draggable objects (panel size and side arrangement controls are implemented), workspace file watching, crash recovery of unsaved buffers and automatic project reopening.
+- Built-in database GUI, PHP/PostgreSQL installation, deployment, Git remote/auth UI, full LSP code actions/references/rename, attach debugging, watch expressions, profiler/sanitizer UI and custom keybinding editor.
+- A signed/notarized release, installer upgrade testing and physical macOS smoke tests.
 
-## Current filesystem workflow
+## Validation and development
 
-The first functional slice uses the existing Rust/Tauri commands for directory listing, text-file reads, and saving an existing file. In the desktop app:
+```sh
+npm ci
+npm test
+npm run build
+npm run check:native
+npm run test:ui
+npm run tauri dev
+```
 
-1. Enter a full local folder path in **File Garden** and choose **Open folder**.
-2. Expand folders in the tree and select a text file to open it.
-3. Edit in the Workbench. Unsaved changes are marked; use **Save** or **Ctrl+S**.
-4. **Ctrl+O** focuses the project-path field.
+`npm run build` also collects lockfile dependency licenses into `THIRD_PARTY_NOTICES/` for bundling. Browser regression tests cover both normal and compact desktop sizes, persisted preferences, keyboard palette use and blocked storage. Native unit tests cover path boundaries, binary/large files, external-change conflicts, atomic saves and protocol framing. The Windows desktop smoke suite uses a disposable project and installed tools; it does not use your PAP files.
 
-The current editor is a lightweight textarea, not Monaco. Folder paths are entered manually; a native folder-picker dialog, new-file creation, binary-file previews, tabs/multiple open documents, external-change detection, and terminal/debugger integration are not implemented yet. Saving intentionally targets an existing file only.
+For the optional native smoke suite, launch a **dedicated test window** with WebView2 remote debugging on loopback (development only), then run `npm run test:desktop`. `SINAIDE_CDP_URL` defaults to `http://127.0.0.1:9235`; `SINAIDE_ARTIFACT_DIR` defaults to `test-results/native`. Do not point the test at a window containing personal unsaved work. The optional `node tests/postgres-smoke.mjs` test creates and shuts down its own local PostgreSQL cluster and requires the Windows PostgreSQL tools.
 
-The browser preview can still show the interface, but native filesystem operations require the Tauri desktop runtime (`npm run tauri dev`).
+See [verification record](docs/VERIFICATION.md) for exact results and platform boundaries. A sample project's successful test is not validation of an unseen PAP application's configuration.

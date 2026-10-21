@@ -1,0 +1,61 @@
+name: Desktop checks and installers
+on:
+  pull_request:
+  push:
+    branches: [main, feat/personal-ide-workspace]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: desktop-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  desktop:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            bundle: nsis
+          - os: macos-latest
+            target: universal-apple-darwin
+            bundle: dmg
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: macOS universal targets
+        if: runner.os == 'macOS'
+        run: rustup target add aarch64-apple-darwin x86_64-apple-darwin
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - run: cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
+      - run: cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
+      - run: cargo test --manifest-path src-tauri/Cargo.toml
+      - name: Install browser for UI checks
+        run: npx playwright install chromium
+      - run: npm run test:ui
+        env:
+          CI: true
+      - name: Build native installer (unsigned development build)
+        run: npm run tauri build -- --target ${{ matrix.target }} --bundles ${{ matrix.bundle }}
+      - name: Preserve installer and dependency notices
+        uses: actions/upload-artifact@v4
+        with:
+          name: SinaIDE-${{ runner.os }}-${{ matrix.target }}-unsigned
+          path: |
+            src-tauri/target/**/bundle/nsis/*.exe
+            src-tauri/target/**/bundle/dmg/*.dmg
+            THIRD_PARTY_NOTICES/**
+          if-no-files-found: error

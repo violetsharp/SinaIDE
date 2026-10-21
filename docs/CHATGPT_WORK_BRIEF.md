@@ -52,6 +52,10 @@ Read these repository files first:
 9. DAP debugger foundation: Rust/C++ first, then C#/.NET and JavaScript/TypeScript.
 10. Profiling, sanitizers, crash diagnostics, CI, and quality improvements.
 
+## Current user priority and branch
+
+The current user priority is their own HTML/CSS/PHP/PostgreSQL PAP and general personal development. `feat/personal-ide-workspace` extends the filesystem branch with the 0.2 core toolset and installer work. Read the implementation checkpoint and verification record before assuming all roadmap phases are complete. Preserve the comfy personal studio identity. Do not infer that the PAP is Aetherband or JigsawStudio.
+
 ## Project-specific language priorities
 
 - **SinaIDE:** Rust + TypeScript/React.

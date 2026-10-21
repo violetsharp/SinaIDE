@@ -1,6 +1,6 @@
 [package]
 name = "sinaide"
-version = "0.1.0"
+version = "0.2.0"
 description = "A strange little creative world for making software."
 authors = ["SinaIDE"]
 edition = "2021"
@@ -16,3 +16,12 @@ tauri-build = { version = "2", features = [] }
 tauri = { version = "2", features = [] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+tauri-plugin-dialog = "2"
+sha2 = "0.10"
+tempfile = "3"
+ignore = "0.4"
+portable-pty = "0.9"
+url = "2"
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
