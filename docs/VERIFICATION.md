@@ -32,5 +32,6 @@ The first macOS CI run passed frontend/Rust/browser checks but exhausted Node's 
 - The unseen PAP's schema, framework, routing, dependencies and deployment have not been validated. PHP built-in serving and real PHP→PostgreSQL queries were checked on a test project.
 - Explicit save protection does not provide crash recovery for unsaved buffers. File saves do not lock out external editors; the final compare/replace interval remains a small race.
 - No free panel dragging, database administration GUI, automatic file watching, universal debugger coverage or profiler is claimed.
+- Symbolic-link rename/removal is intentionally refused; Unix tests cover refusing in-project links without altering their original target.
 
 Native debug connections are for development verification only. They are not enabled in installer configuration. Local test artifacts and generated dependency inventories are excluded from Git.

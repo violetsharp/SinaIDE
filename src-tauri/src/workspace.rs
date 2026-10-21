@@ -79,6 +79,17 @@ pub fn relative(root: &Path, path: &Path) -> String {
         .to_string_lossy()
         .replace('\\', "/")
 }
+fn mutation_target(root: &Path, path: &str) -> Result<PathBuf, String> {
+    let target = resolve(root, path, true)?;
+    if fs::symlink_metadata(root.join(path))
+        .map_err(err)?
+        .file_type()
+        .is_symlink()
+    {
+        return Err("Renaming or removing symbolic links is not supported. Choose the original file or folder instead.".into());
+    }
+    Ok(target)
+}
 pub fn resolve(root: &Path, path: &str, exists: bool) -> Result<PathBuf, String> {
     let canonical_root = root.canonicalize().map_err(err)?;
     let root = canonical_root.as_path();
@@ -252,7 +263,7 @@ pub fn rename_entry(
 ) -> Result<(), String> {
     let _guard = state.writes.lock().map_err(err)?;
     let root = state.root()?;
-    let source = resolve(&root, &path, true)?;
+    let source = mutation_target(&root, &path)?;
     let dest = resolve(&root, &destination, false)?;
     if source == root || dest.exists() || dest.starts_with(&source) {
         return Err("Cannot replace an existing path or move a folder into itself.".into());
@@ -263,7 +274,7 @@ pub fn rename_entry(
 pub fn trash_entry(path: String, state: tauri::State<Workspace>) -> Result<String, String> {
     let _guard = state.writes.lock().map_err(err)?;
     let root = state.root()?;
-    let target = resolve(&root, &path, true)?;
+    let target = mutation_target(&root, &path)?;
     if target == root || path.starts_with(".sinaide/") {
         return Err("Cannot remove the project or SinaIDE recovery folder.".into());
     }
@@ -440,5 +451,10 @@ mod tests {
         let out = tempfile::tempdir().unwrap();
         std::os::unix::fs::symlink(out.path(), d.path().join("link")).unwrap();
         assert!(resolve(d.path(), "link", true).is_err());
+        let original = d.path().join("original");
+        fs::write(&original, "keep this file").unwrap();
+        std::os::unix::fs::symlink(&original, d.path().join("internal-link")).unwrap();
+        assert!(mutation_target(d.path(), "internal-link").is_err());
+        assert_eq!(fs::read_to_string(&original).unwrap(), "keep this file");
     }
 }

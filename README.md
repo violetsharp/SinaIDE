@@ -109,6 +109,7 @@ Implemented:
 
 - Native folder picker, project-relative file tree, refresh and hidden-file control.
 - Create files/folders, rename closed documents and put items into a recoverable `.sinaide/` folder. No recursive permanent deletion.
+- Rename/removal of symbolic links is refused so these actions cannot accidentally mutate their targets.
 - Monaco tabs with independent buffers, view state, syntax, find/replace, undo/redo, save, save all and save a copy.
 - Dirty prompts before document close, project switch and native app close. Failed saves preserve edits.
 - Atomic file replacement with content-revision checks for external edits. Files must be UTF-8, non-binary and at most 2 MiB. External editors are not locked: a very small final check/replace race remains.
