@@ -5,6 +5,7 @@ import type { ProcessPoll, GitResult, ToolConfig, Document } from "./types";
 import Terminal from "./Terminal";
 import type { LanguageTools } from "./languageTools";
 import type * as Monaco from "monaco-editor";
+import { makeRecipe, readRecipes } from "./taskRecipes";
 
 export function Search({
   open,
@@ -292,6 +293,8 @@ export function Basement({
   preview: () => void;
 }) {
   const windows = navigator.userAgent.includes("Windows");
+  const [recipes, setRecipes] = useState(() => readRecipes(root));
+  const [recipeName, setRecipeName] = useState("");
   const [executable, setExecutable] = useState("php"),
     [args, setArgs] = useState('["-S","127.0.0.1:8000","-t","."]'),
     [cwd, setCwd] = useState(""),
@@ -455,6 +458,82 @@ export function Basement({
         <summary>
           Run a tool · {executable} · {cwd || "project root"}
         </summary>
+        <div className="saved-recipes">
+          <h3>Little routines</h3>
+          <label>
+            Task name
+            <input
+              value={recipeName}
+              onChange={(e) => setRecipeName(e.target.value)}
+              placeholder="my PHP server"
+            />
+          </label>
+          <button
+            type="button"
+            onClick={() => {
+              try {
+                const recipe = makeRecipe(
+                  recipeName,
+                  executable,
+                  args,
+                  cwd,
+                  terminal,
+                );
+                const next = [
+                  ...recipes.filter((v) => v.name !== recipe.name),
+                  recipe,
+                ].slice(-20);
+                localStorage.setItem(
+                  `sinaide.tasks.v1:${root}`,
+                  JSON.stringify(next),
+                );
+                setRecipes(next);
+              } catch (e) {
+                error(String(e));
+              }
+            }}
+          >
+            Keep this task
+          </button>
+          <small>
+            Saved on this computer for this project. Keep passwords out of task
+            arguments. Loading a task never runs it.
+          </small>
+          {recipes.map((recipe) => (
+            <div className="tool-actions" key={recipe.name}>
+              <button
+                type="button"
+                onClick={() => {
+                  setExecutable(recipe.executable);
+                  setArgs(JSON.stringify(recipe.args));
+                  setCwd(recipe.cwd);
+                  setTerminal(recipe.terminal);
+                  setRecipeName(recipe.name);
+                }}
+              >
+                Load {recipe.name}
+              </button>
+              <button
+                type="button"
+                aria-label={`Forget task ${recipe.name}`}
+                onClick={() => {
+                  try {
+                    const next = recipes.filter((v) => v.name !== recipe.name);
+                    localStorage.setItem(
+                      `sinaide.tasks.v1:${root}`,
+                      JSON.stringify(next),
+                    );
+                    setRecipes(next);
+                  } catch (e) {
+                    error(String(e));
+                  }
+                }}
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
         <form
           className="task-form"
           onSubmit={(e) => {

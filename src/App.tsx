@@ -9,6 +9,8 @@ import { applySave, dirty, uriIdentity } from "./types";
 import type { Document, DiskDocument, FileEntry, Project } from "./types";
 import { Search, Git, Basement, LanguagePanel } from "./Tools";
 import type { LanguageTools } from "./languageTools";
+import Updates from "./Updates";
+import { APP_VERSION } from "./version";
 const Editor = lazy(() => import("./Editor"));
 const Debugger = lazy(() => import("./Debugger"));
 type Tool =
@@ -1208,6 +1210,31 @@ function App() {
                 hidden={tool !== "world"}
               >
                 <span className="eyebrow">MAKE YOURSELF AT HOME</span>
+                <Updates
+                  onNotice={setNotice}
+                  afterInstall={() =>
+                    editorRef.current?.updateOptions({ readOnly: false })
+                  }
+                  beforeInstall={async () => {
+                    const result = await ask(
+                      "Let your studio grow?",
+                      "Installing an update will close SinaIDE and its running tools. Save your work before continuing.",
+                      ["Install update", "Cancel"],
+                    );
+                    if (result.choice !== "Install update") return false;
+                    if (
+                      current.current.docs.some(dirty) ||
+                      saves.current.size
+                    ) {
+                      report(
+                        "Save or close your unsaved documents before installing the update.",
+                      );
+                      return false;
+                    }
+                    editorRef.current?.updateOptions({ readOnly: true });
+                    return true;
+                  }}
+                />
                 <label>
                   Your name or a little nickname
                   <input
@@ -1369,7 +1396,7 @@ function App() {
         <div>
           <button onClick={() => setBasement((v) => !v)}>⌘ basement</button>
           <span className="status-heart">♥</span>
-          <span>made for curiosity · 0.2.0</span>
+          <span>made for curiosity · {APP_VERSION}</span>
         </div>
       </footer>
       {question && <Modal question={question} />}

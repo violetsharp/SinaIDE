@@ -26,6 +26,34 @@ beforeEach(() => {
 });
 afterEach(() => vi.useRealTimers());
 describe("language and debugger transport lifecycle", () => {
+  it("rejects DAP reverse execution and notifies the UI exactly once on close", async () => {
+    const close = vi.fn(),
+      event = vi.fn();
+    const p = new Protocol("dap", event, vi.fn(), close);
+    await p.start({ executable: "fixture", args: [], cwd: "" });
+    messages.push(
+      JSON.stringify({
+        seq: 91,
+        type: "request",
+        command: "runInTerminal",
+        arguments: { args: ["untrusted"] },
+      }),
+    );
+    await vi.advanceTimersByTimeAsync(60);
+    const sent = call.mock.calls
+      .filter((c) => c[0] === "send_process")
+      .map((c) => JSON.parse(c[1].data));
+    expect(sent.at(-1)).toMatchObject({
+      type: "response",
+      request_seq: 91,
+      command: "runInTerminal",
+      success: false,
+    });
+    expect(event).not.toHaveBeenCalled();
+    await p.close();
+    await p.close();
+    expect(close).toHaveBeenCalledTimes(1);
+  });
   it("correlates LSP responses and clears pending requests on close", async () => {
     const p = new Protocol("lsp", vi.fn(), vi.fn());
     await p.start({ executable: "fixture", args: [], cwd: "" });

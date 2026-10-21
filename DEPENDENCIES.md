@@ -9,6 +9,7 @@ SinaIDE's own license remains undecided. This register does not license the proj
 | React, React DOM | 19.3.1 each | [React](https://github.com/facebook/react), MIT | UI rendering; retain MIT notices |
 | `@tauri-apps/api` | 2.12.4 | [Tauri](https://github.com/tauri-apps/tauri), Apache-2.0 OR MIT | Typed native IPC and window lifecycle |
 | `@tauri-apps/plugin-dialog` | 2.8.3 | [Tauri plugins](https://github.com/tauri-apps/plugins-workspace/tree/v2/plugins/dialog), MIT OR Apache-2.0 | Native folder picker; only explicit dialog permissions |
+| `@tauri-apps/plugin-updater` / `tauri-plugin-updater` | 2.14.0 / 2.14.0 | [Official updater](https://github.com/tauri-apps/plugins-workspace/tree/v2/plugins/updater), MIT OR Apache-2.0 | HTTPS update checks, signed/version-bound downloads and installation; native TLS/crypto/archive dependencies included in generated notices |
 | `monaco-editor` | 0.57.0 | [Monaco](https://github.com/microsoft/monaco-editor), MIT | Workbench models, editing, syntax and language workers; retain `LICENSE` **and** `ThirdPartyNotices.txt` |
 | `dompurify` (Monaco transitive dependency) | **3.4.17** | [DOMPurify](https://github.com/cure53/DOMPurify), MPL-2.0 OR Apache-2.0 | Explicit npm override replaces Monaco's requested 3.4.15; retain upstream license texts. This is a version override, not a local source modification |
 | `@xterm/xterm` | 6.0.0 | [xterm.js](https://github.com/xtermjs/xterm.js), MIT | Basement terminal rendering; retain MIT notices |

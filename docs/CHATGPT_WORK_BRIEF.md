@@ -54,7 +54,7 @@ Read these repository files first:
 
 ## Current user priority and branch
 
-The current user priority is their own HTML/CSS/PHP/PostgreSQL PAP and general personal development. `feat/personal-ide-workspace` extends the filesystem branch with the 0.2 core toolset and installer work. Read the implementation checkpoint and verification record before assuming all roadmap phases are complete. Preserve the comfy personal studio identity. Do not infer that the PAP is Aetherband or JigsawStudio.
+The current user priority is their own HTML/CSS/PHP/PostgreSQL PAP and general personal development. `feat/personal-ide-workspace` includes the 0.5 updater/debugging/task-recipes increment. Read RELEASE_0.5.md, AUTO_UPDATES.md, the implementation checkpoint and verification record before assuming all roadmap phases are complete. Preserve the comfy personal studio identity. The user clarified that this is core IDE work, not DAW work. Source stays private; downloads are public in loveyydoll/SinaIDE-releases. Future publishing is gated, and the private update signing key must remain local until explicitly authorized for Actions. No Windows/Apple publisher credentials exist. Do not infer that the PAP is Aetherband or JigsawStudio.
 
 ## Project-specific language priorities
 

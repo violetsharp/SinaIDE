@@ -2,13 +2,20 @@ mod processes;
 mod tools;
 mod workspace;
 use tauri::Manager;
+#[tauri::command]
+fn restart_app(app: tauri::AppHandle) {
+    app.state::<processes::Processes>().shutdown();
+    app.restart();
+}
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(workspace::Workspace::default())
         .manage(processes::Processes::default())
         .invoke_handler(tauri::generate_handler![
+            restart_app,
             tools::check_web_tools,
             workspace::open_workspace,
             workspace::read_directory,

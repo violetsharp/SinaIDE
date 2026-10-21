@@ -1,0 +1,115 @@
+name: Signed app updates
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: sinaide-release
+  cancel-in-progress: false
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      enabled: ${{ steps.gate.outputs.enabled }}
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: gate
+        env:
+          KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TOKEN: ${{ secrets.DOWNLOADS_TOKEN }}
+        run: |
+          if [ -n "$KEY" ] && [ -n "$TOKEN" ]; then
+            echo 'enabled=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'enabled=false' >> "$GITHUB_OUTPUT"
+            echo 'Publishing is gated: configure the updater key and scoped DOWNLOADS_TOKEN. Desktop checks still build development installers.'
+          fi
+      - id: version
+        env:
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          node --input-type=module -e 'import fs from "node:fs"; const base=JSON.parse(fs.readFileSync("package.json")).version; const version=process.env.REF_TYPE==="tag" ? process.env.REF_NAME.replace(/^v/,"") : base.split(".").slice(0,2).join(".")+"."+process.env.GITHUB_RUN_NUMBER; if(!/^\d+\.\d+\.\d+$/.test(version)) throw Error("Invalid version"); fs.appendFileSync(process.env.GITHUB_OUTPUT,`version=${version}\n`);'
+  build:
+    needs: gate
+    if: needs.gate.outputs.enabled == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            bundles: nsis
+          - os: macos-latest
+            target: universal-apple-darwin
+            bundles: dmg,app
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - uses: dtolnay/rust-toolchain@stable
+        with: { components: "rustfmt,clippy" }
+      - if: runner.os == 'macOS'
+        run: rustup target add aarch64-apple-darwin x86_64-apple-darwin
+      - uses: Swatinem/rust-cache@v2
+        with: { workspaces: "src-tauri -> target" }
+      - run: npm ci
+      - run: node scripts/set-version.mjs "$RELEASE_VERSION"
+        shell: bash
+        env:
+          RELEASE_VERSION: ${{ needs.gate.outputs.version }}
+      - run: npm test
+      - run: npm run build
+      - run: npm run check:native
+      - run: npx playwright install chromium
+      - run: npm run test:ui
+        env: { CI: true }
+      - name: Configure release signing
+        run: |
+          node --input-type=module -e 'import fs from "node:fs"; const bundle={createUpdaterArtifacts:true}; if(process.platform==="win32" && process.env.WINDOWS_SIGN_COMMAND) bundle.windows={signCommand:process.env.WINDOWS_SIGN_COMMAND}; fs.writeFileSync("release-config.json",JSON.stringify({bundle}));'
+        shell: bash
+        env:
+          WINDOWS_SIGN_COMMAND: ${{ vars.WINDOWS_SIGN_COMMAND }}
+      - name: Build signed updater artifacts
+        run: npm run tauri build -- --target ${{ matrix.target }} --bundles ${{ matrix.bundles }} --config release-config.json
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ vars.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signed-${{ runner.os }}
+          path: |
+            src-tauri/target/**/bundle/nsis/*-setup.exe*
+            src-tauri/target/**/bundle/dmg/*.dmg
+            src-tauri/target/**/bundle/macos/*.app.tar.gz*
+          if-no-files-found: error
+  publish:
+    needs: [gate, build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/download-artifact@v4
+        with: { path: release-input, pattern: "signed-*" }
+      - run: node scripts/collect-release.mjs release-input release-output "$RELEASE_VERSION"
+        env:
+          RELEASE_VERSION: ${{ needs.gate.outputs.version }}
+      - name: Publish only after both platforms pass
+        env:
+          GH_TOKEN: ${{ secrets.DOWNLOADS_TOKEN }}
+          RELEASE_VERSION: ${{ needs.gate.outputs.version }}
+        run: |
+          gh release create "v$RELEASE_VERSION" release-output/* --repo loveyydoll/SinaIDE-releases --title "SinaIDE $RELEASE_VERSION" --notes-file docs/RELEASE_0.5.md --draft
+          gh release edit "v$RELEASE_VERSION" --repo loveyydoll/SinaIDE-releases --draft=false --latest

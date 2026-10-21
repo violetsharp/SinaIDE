@@ -4,7 +4,9 @@
 
 SinaIDE is a personal desktop IDE built around one central idea: **an IDE does not have to look or behave like every other IDE**. It should feel like a tiny world that belongs to its creator—not a corporate tool wearing a colorful theme.
 
-SinaIDE 0.2 is a working desktop development workspace for personal projects, with an initial focus on HTML, CSS, PHP and PostgreSQL. The editor, filesystem, search, terminal, task runner and Git operations are real. It is still an early application: advanced language tooling and debugging need configured external tools, and macOS installation must be validated separately.
+SinaIDE 0.5 is a working desktop development workspace for personal projects, with an initial focus on HTML, CSS, PHP and PostgreSQL. It adds signed background updates, DAP attach/watch/conditional debugging and locally saved task recipes. The editor, filesystem, search, terminal, task runner and Git operations are real. It is still an early application: language tooling and debugging need configured external tools. Installers do not yet have Windows publisher certificates or Apple notarization.
+
+Read the [0.5 release notes](docs/RELEASE_0.5.md) and [update/signing setup](docs/AUTO_UPDATES.md). Public installers are distributed separately from the private source in [SinaIDE releases](https://github.com/loveyydoll/SinaIDE-releases/releases).
 
 ## Design manifesto
 

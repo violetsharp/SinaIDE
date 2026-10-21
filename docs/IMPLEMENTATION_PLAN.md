@@ -6,7 +6,9 @@
 > Current stack: Tauri 2, Rust, React, TypeScript, Vite.  
 > Product identity: an expressive, maximal, experimental creative IDE—not a corporate IDE with a decorative skin.
 
-## Current implementation checkpoint (0.2)
+## Current implementation checkpoint (0.5)
+
+The 0.5 increment adds signed background update checks/downloads and guarded installation, a separate public distribution repository, a gated release pipeline, DAP attach/watch/evaluation and capability-checked breakpoint conditions, and per-project local task recipes. Real debugpy launch, conditional breakpoints, variables, watches, step-over, console evaluation and attach/listen were verified on Windows. PHP/Xdebug interoperability remains separate and unverified. Publisher certificates/notarization, complete upgrade testing and physical Mac launch remain open. See [release notes](RELEASE_0.5.md) and [AUTO_UPDATES.md](AUTO_UPDATES.md).
 
 The user requested a broad personal-use IDE build with HTML/CSS/PHP/PostgreSQL as the PAP priority. The `feat/personal-ide-workspace` branch extends the existing filesystem slice and adds the core editor/tools and installers while retaining the studio identity. This checkpoint does not mark every phase below complete.
 
@@ -16,11 +18,11 @@ The user requested a broad personal-use IDE build with HTML/CSS/PHP/PostgreSQL a
 | 2 editor | Monaco, models/tabs, view state, dirty/save/close and core editing implemented. No crash recovery for unsaved edits. |
 | 3 personal workspace | Notebook, name, three themes, validated settings, panel size/side controls, quiet/reduced motion and searchable command palette implemented. Free dragging remains open. |
 | 4 search | Cancellable literal and filename search, ignores/exclusions, previews and limits implemented. Regex and live indexing remain open. |
-| 5 tools | Real multi-session PTY and structured tasks implemented; PHP server/lint and PostgreSQL presets. Persistent task configs and full environment editor remain open. |
+| 5 tools | Real multi-session PTY, structured tasks and local per-project task recipes implemented; PHP server/lint and PostgreSQL presets. Full environment editor remains open. |
 | 6 Git | Status/branch/diff/stage/unstage/commit implemented; destructive and remote UI operations omitted. |
 | 7 LSP | Explicit external stdio server with diagnostics/hover/plain completion/definition; transport failure tests. Real PHP server compatibility, references and richer edits remain open. |
-| 8 DAP | Explicit external adapter, launch/breakpoints/stepping/stack/scopes/variables; protocol tests. Actual adapter programs, attach/watch/conditions and PHP Xdebug integration remain unverified. |
-| 9 quality | Unit tests, browser regression checks, Windows native/PHP/PostgreSQL smoke and cross-platform CI/installer workflow added. Signed distribution, Mac hardware, profiling and upgrade testing remain open. |
+| 8 DAP | External adapter launch/attach, watches/console, conditional/hit/log breakpoints, stepping/stack/scopes/variables. Real debugpy launch/attach smoke passed on Windows. PHP Xdebug, other adapters, multithread controls and exception configuration remain open. |
+| 9 quality | Unit/browser checks, native/PHP/PostgreSQL smoke, installers, updater-signature support and gated release automation. OS publisher signing/notarization, Mac hardware, profiling and installed-upgrade testing remain open. |
 
 See [VERIFICATION.md](VERIFICATION.md), [PHP_POSTGRES.md](PHP_POSTGRES.md), and [INSTALLERS.md](INSTALLERS.md). Do not describe this checkpoint as every acceptance criterion below being fulfilled.
 

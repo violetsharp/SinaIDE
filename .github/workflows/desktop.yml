@@ -3,6 +3,7 @@ on:
   pull_request:
   push:
     branches: [main]
+    tags: ["v*"]
   workflow_dispatch:
 permissions:
   contents: read
@@ -50,6 +51,9 @@ jobs:
           CI: true
       - name: Build native installer (unsigned development build)
         run: npm run tauri build -- --target ${{ matrix.target }} --bundles ${{ matrix.bundle }}
+      - name: Preserve macOS app for locally signed updater distribution
+        if: runner.os == 'macOS'
+        run: tar -czf SinaIDE.app.tar.gz -C src-tauri/target/universal-apple-darwin/release/bundle/macos SinaIDE.app
       - name: Preserve installer and dependency notices
         uses: actions/upload-artifact@v4
         with:
@@ -57,5 +61,7 @@ jobs:
           path: |
             src-tauri/target/**/bundle/nsis/*.exe
             src-tauri/target/**/bundle/dmg/*.dmg
+            src-tauri/target/**/bundle/macos/*.app.tar.gz
+            SinaIDE.app.tar.gz
             THIRD_PARTY_NOTICES/**
           if-no-files-found: error

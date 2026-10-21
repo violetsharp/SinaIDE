@@ -873,3 +873,28 @@ textarea {
     height: 54px;
   }
 }
+.update-letter,
+.saved-recipes,
+.debug-breakpoint {
+  padding: 12px;
+  margin: 10px 0 16px;
+  border: 1px dashed var(--border, #60456e);
+  border-radius: 12px;
+}
+.update-letter h3,
+.saved-recipes h3 {
+  font-family: "Fraunces", serif;
+}
+.update-letter small,
+.debug-breakpoint small,
+.saved-recipes small {
+  display: block;
+  line-height: 1.6;
+  opacity: 0.8;
+}
+.tool-panel fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}

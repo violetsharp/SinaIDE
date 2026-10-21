@@ -1,4 +1,22 @@
 import { test, expect } from "@playwright/test";
+test("update preferences persist and browser preview cannot install updates", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "World ✧", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Check for updates", exact: true }),
+  ).toBeDisabled();
+  await page.getByLabel("Check & download updates automatically").uncheck();
+  await page.reload();
+  await page.getByRole("button", { name: "World ✧", exact: true }).click();
+  await expect(
+    page.getByLabel("Check & download updates automatically"),
+  ).not.toBeChecked();
+  await expect(
+    page.getByRole("heading", { name: "Make a little something." }),
+  ).toBeVisible();
+});
 test("personal atmosphere, notebook and layout persist across reload", async ({
   page,
 }) => {

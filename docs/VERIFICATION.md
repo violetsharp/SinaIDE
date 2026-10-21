@@ -1,4 +1,14 @@
-# SinaIDE 0.2 verification record
+# SinaIDE verification record
+
+## 0.5 local checkpoint
+
+On Windows x64, 13 frontend tests, 8 native tests, type checking, native format/Clippy and 10 browser checks passed. Production frontend builds pass. A real external debugpy 1.8.22 adapter exercised launch, a conditional breakpoint, stack/scopes/variables, a watch result, console evaluation, step-over, attach/listen and disconnect against a disposable Python program. Saving/loading a task recipe also passed. No page errors were observed in that workflow. This does not validate a PHP/Xdebug adapter.
+
+The first attach test used debugpy's connect configuration with a separately started stdio adapter, which is not that adapter's supported connection arrangement. Retesting with the adapter's listen configuration and a connecting debug target passed. No failure is counted as a passed test.
+
+Update signatures are distinct from OS publisher signing. The updater key stays local; Actions publishing is gated. Windows installer build, final cross-platform CI and published-feed checks are recorded with the release artifacts when completed. An actual installed-version upgrade and physical Mac launch remain unverified.
+
+## 0.2 baseline evidence
 
 Recorded 2026-10-21 on Windows x64. This records actual local evidence, not every roadmap acceptance criterion.
 

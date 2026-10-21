@@ -1,5 +1,7 @@
 # Installing SinaIDE on Windows and macOS
 
+For 0.5, use the [public downloads](https://github.com/loveyydoll/SinaIDE-releases/releases) and read [signed updates and release setup](AUTO_UPDATES.md). Updater signatures verify update authenticity; they do not remove operating-system warnings from the current builds, which lack Windows publisher certificates and Apple notarization.
+
 SinaIDE uses one Rust/Tauri + React/TypeScript codebase and builds a native installer for each operating system. A Windows installer cannot install the macOS app, and the macOS DMG cannot install the Windows app.
 
 | Platform | Artifact | Installation | Build host |

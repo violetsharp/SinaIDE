@@ -19,12 +19,17 @@ export class Protocol {
     private kind: "lsp" | "dap",
     private event: (message: any) => void,
     private log: (message: string) => void,
+    private onClose: () => void = () => {},
   ) {}
   async start(config: ToolConfig) {
     this.id = await native<number>("start_process", {
       ...config,
       mode: "protocol",
     });
+    if (this.closed) {
+      await native("stop_process", { id: this.id });
+      throw Error("Tool session was closed during startup.");
+    }
     this.timer = setInterval(() => void this.poll(), 60);
   }
   private async poll() {
@@ -72,6 +77,15 @@ export class Protocol {
                   },
                 }),
           });
+        } else if (this.kind === "dap" && m.type === "request") {
+          await this.send({
+            seq: ++this.sequence,
+            type: "response",
+            request_seq: m.seq,
+            command: m.command,
+            success: false,
+            message: "Server-initiated execution is not supported.",
+          });
         } else this.event(m);
       }
       if (p.finished) throw Error(`Tool exited with code ${p.exitCode}.`);
@@ -114,6 +128,7 @@ export class Protocol {
   async close() {
     if (this.closed) return;
     this.closed = true;
+    this.onClose();
     clearInterval(this.timer);
     for (const p of this.pending.values()) {
       clearTimeout(p.timer);
