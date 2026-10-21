@@ -81,14 +81,21 @@ pub fn relative(root: &Path, path: &Path) -> String {
 }
 fn mutation_target(root: &Path, path: &str) -> Result<PathBuf, String> {
     let target = resolve(root, path, true)?;
-    if fs::symlink_metadata(root.join(path))
-        .map_err(err)?
-        .file_type()
-        .is_symlink()
-    {
+    if is_link(&fs::symlink_metadata(root.join(path)).map_err(err)?) {
         return Err("Renaming or removing symbolic links is not supported. Choose the original file or folder instead.".into());
     }
     Ok(target)
+}
+fn is_link(metadata: &fs::Metadata) -> bool {
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::MetadataExt;
+        // Junctions and other reparse points can redirect operations too.
+        if metadata.file_attributes() & 0x400 != 0 {
+            return true;
+        }
+    }
+    metadata.file_type().is_symlink()
 }
 pub fn resolve(root: &Path, path: &str, exists: bool) -> Result<PathBuf, String> {
     let canonical_root = root.canonicalize().map_err(err)?;
@@ -122,7 +129,7 @@ pub fn entries(root: &Path, directory: &Path) -> Result<Vec<Entry>, String> {
     for e in fs::read_dir(directory).map_err(err)? {
         let e = e.map_err(err)?;
         let name = e.file_name().to_string_lossy().into_owned();
-        let symlink = e.file_type().map_err(err)?.is_symlink();
+        let symlink = is_link(&fs::symlink_metadata(e.path()).map_err(err)?);
         result.push(Entry {
             name: name.clone(),
             path: relative(root, &e.path()),
@@ -311,6 +318,26 @@ pub struct SearchResults {
 pub fn cancel_search(state: tauri::State<Workspace>) {
     state.search.fetch_add(1, Ordering::SeqCst);
 }
+fn project_walk(root: &Path, excludes: Vec<String>) -> ignore::Walk {
+    let mut walk = ignore::WalkBuilder::new(root);
+    walk.hidden(false).follow_links(false).require_git(false);
+    walk.filter_entry(move |e| {
+        ![
+            ".git",
+            "node_modules",
+            "target",
+            "dist",
+            "build",
+            ".sinaide",
+        ]
+        .contains(&e.file_name().to_string_lossy().as_ref())
+            && !excludes
+                .iter()
+                .any(|x| e.file_name() == std::ffi::OsStr::new(x))
+            && fs::symlink_metadata(e.path()).is_ok_and(|m| !is_link(&m))
+    });
+    walk.build()
+}
 #[tauri::command(async)]
 pub fn search_project(
     query: String,
@@ -342,24 +369,7 @@ pub fn search_project(
             v.to_lowercase().contains(&needle)
         }
     };
-    let mut walk = ignore::WalkBuilder::new(&root);
-    walk.hidden(false).follow_links(false).require_git(false);
-    let excluded = excludes;
-    walk.filter_entry(move |e| {
-        ![
-            ".git",
-            "node_modules",
-            "target",
-            "dist",
-            "build",
-            ".sinaide",
-        ]
-        .contains(&e.file_name().to_string_lossy().as_ref())
-            && !excluded
-                .iter()
-                .any(|x| e.file_name() == std::ffi::OsStr::new(x))
-    });
-    for entry in walk.build() {
+    for entry in project_walk(&root, excludes) {
         if ticket != state.search.load(Ordering::SeqCst) {
             result.cancelled = true;
             break;
@@ -456,5 +466,36 @@ mod tests {
         std::os::unix::fs::symlink(&original, d.path().join("internal-link")).unwrap();
         assert!(mutation_target(d.path(), "internal-link").is_err());
         assert_eq!(fs::read_to_string(&original).unwrap(), "keep this file");
+        assert!(project_walk(d.path(), Vec::new())
+            .filter_map(Result::ok)
+            .all(|e| e.path() != d.path().join("internal-link")));
+    }
+    #[cfg(windows)]
+    #[test]
+    fn junction_mutation_preserves_original_directory() {
+        use std::os::windows::process::CommandExt;
+        let d = tempfile::tempdir().unwrap();
+        let original = d.path().join("original");
+        fs::create_dir(&original).unwrap();
+        fs::write(original.join("keep.txt"), "keep this file").unwrap();
+        let script = d.path().join("junction.ps1");
+        fs::write(&script, "param($LinkPath,$TargetPath)\nNew-Item -ItemType Junction -Path $LinkPath -Target $TargetPath -ErrorAction Stop | Out-Null\n").unwrap();
+        let status = std::process::Command::new("powershell.exe")
+            .creation_flags(0x08000000)
+            .args(["-NoProfile", "-NonInteractive", "-File"])
+            .arg(&script)
+            .arg(d.path().join("link"))
+            .arg(&original)
+            .status()
+            .unwrap();
+        assert!(status.success());
+        assert!(mutation_target(d.path(), "link").is_err());
+        assert!(project_walk(d.path(), Vec::new())
+            .filter_map(Result::ok)
+            .all(|e| !e.path().starts_with(d.path().join("link"))));
+        assert_eq!(
+            fs::read_to_string(original.join("keep.txt")).unwrap(),
+            "keep this file"
+        );
     }
 }

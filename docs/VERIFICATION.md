@@ -9,7 +9,7 @@ Recorded 2026-10-21 on Windows x64. This records actual local evidence, not ever
 | `npm run build` | Type checking and production frontend build passed; workers and local fonts bundled. Monaco's large-chunk size warning remains. |
 | `cargo fmt --manifest-path src-tauri/Cargo.toml -- --check` | Passed |
 | `cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings` | Passed |
-| `cargo test --manifest-path src-tauri/Cargo.toml` | 7 tests passed: traversal, Unicode atomic save, binary/size limits, external revision conflicts and protocol framing/output bounds |
+| `cargo test --manifest-path src-tauri/Cargo.toml` | 8 tests passed: traversal, Unicode atomic save, binary/size limits, external revision conflicts and protocol framing/output bounds, and Windows junction mutation/search safety |
 | `npm run test:ui` | 8 checks passed in Edge at 1440×960 and 1000×700, including reduced motion, saved atmosphere/notebook, keyboard palette, corrupt and blocked storage |
 | `npm run test:desktop` | 11 real Windows desktop workflow groups passed against disposable files. No page errors. |
 | `node tests/postgres-smoke.mjs` | Passed: PHP PDO query returned 42 from an isolated PostgreSQL 18 test cluster; discovered psql terminal query returned its expected result. Test cluster shut down. System php.ini unchanged. |
@@ -32,6 +32,6 @@ The first macOS CI run passed frontend/Rust/browser checks but exhausted Node's 
 - The unseen PAP's schema, framework, routing, dependencies and deployment have not been validated. PHP built-in serving and real PHP→PostgreSQL queries were checked on a test project.
 - Explicit save protection does not provide crash recovery for unsaved buffers. File saves do not lock out external editors; the final compare/replace interval remains a small race.
 - No free panel dragging, database administration GUI, automatic file watching, universal debugger coverage or profiler is claimed.
-- Symbolic-link rename/removal is intentionally refused; Unix tests cover refusing in-project links without altering their original target.
+- Symbolic-link/junction rename and removal are intentionally refused. Unix and Windows tests cover refusing redirected entries without altering their original target; project search also skips reparse points. Other Windows reparse-point mutation is conservatively unsupported.
 
 Native debug connections are for development verification only. They are not enabled in installer configuration. Local test artifacts and generated dependency inventories are excluded from Git.
