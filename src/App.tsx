@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import type { FormEvent, ReactNode } from "react";
 import { invoke } from "@tauri-apps/api/core";
 
 type FileEntry = {
@@ -52,7 +53,7 @@ function App() {
     setDirectories((current) => ({ ...current, [path]: entries }));
   }
 
-  async function openProject(event?: React.FormEvent) {
+  async function openProject(event?: FormEvent) {
     event?.preventDefault();
     const path = projectPath.trim();
     if (!path) {
@@ -152,7 +153,7 @@ function App() {
     return () => window.removeEventListener("keydown", onKeyDown);
   });
 
-  function renderEntries(path: string, depth = 0): React.ReactNode {
+  function renderEntries(path: string, depth = 0): ReactNode {
     const entries = directories[path] ?? [];
     return entries.filter((entry) => !entry.hidden).map((entry) => {
       const isDirectory = entry.kind === "directory";
