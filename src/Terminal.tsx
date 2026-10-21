@@ -40,15 +40,17 @@ export default function Terminal({
         id,
         cols: terminal.cols,
         rows: terminal.rows,
-      }).catch((e) => report.current(String(e)));
+      }).catch((e) => {
+        if (alive) report.current(String(e));
+      });
     };
     const observer = new ResizeObserver(resize);
     observer.observe(host.current!);
     resize();
     const input = terminal.onData((data) => {
-      void native("send_process", { id, data }).catch((e) =>
-        report.current(String(e)),
-      );
+      void native("send_process", { id, data }).catch((e) => {
+        if (alive) report.current(String(e));
+      });
     });
     const poll = async () => {
       if (polling || finished) return;
@@ -65,7 +67,7 @@ export default function Terminal({
         }
       } catch (e) {
         finished = true;
-        report.current(String(e));
+        if (alive) report.current(String(e));
       } finally {
         polling = false;
       }

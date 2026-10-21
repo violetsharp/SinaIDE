@@ -399,6 +399,7 @@ textarea {
   line-height: 1.8;
 }
 .tool-panel label,
+.saved-recipes label,
 .task-form label {
   display: flex;
   flex-direction: column;
@@ -409,6 +410,7 @@ textarea {
 .tool-panel input:not([type="checkbox"]):not([type="range"]),
 .tool-panel textarea,
 .tool-panel select,
+.saved-recipes input,
 .task-form input:not([type="checkbox"]) {
   border: 1px solid var(--line);
   border-radius: 7px;

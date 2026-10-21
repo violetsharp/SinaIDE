@@ -305,6 +305,25 @@ export function Basement({
   const current = useRef(sessions);
   current.current = sessions;
   const polling = useRef(false);
+  const stoppedSessions = useRef(new Set<number>());
+  async function stopSession(session: Session, remove: boolean) {
+    stoppedSessions.current.add(session.id);
+    try {
+      await native("stop_process", { id: session.id });
+      setSessions((v) =>
+        remove
+          ? v.filter((s) => s.id !== session.id)
+          : v.map((s) =>
+              s.id === session.id ? { ...s, done: true, code: -1 } : s,
+            ),
+      );
+      if (remove && session.id === selected)
+        setSelected(current.current.find((s) => s.id !== session.id)?.id ?? 0);
+    } catch (e) {
+      stoppedSessions.current.delete(session.id);
+      error(String(e));
+    }
+  }
   const [pgHost, setPgHost] = useState("localhost"),
     [pgDatabase, setPgDatabase] = useState(""),
     [pgUser, setPgUser] = useState("postgres"),
@@ -372,10 +391,15 @@ export function Basement({
     const timer = setInterval(async () => {
       if (polling.current) return;
       polling.current = true;
+      let pollingId = 0;
       try {
-        for (const s of current.current.filter((s) => !s.terminal && !s.done)) {
+        for (const s of current.current.filter(
+          (s) => !s.terminal && !s.done && !stoppedSessions.current.has(s.id),
+        )) {
+          pollingId = s.id;
           const p = await native<ProcessPoll>("poll_process", { id: s.id });
           if (!alive) return;
+          if (stoppedSessions.current.has(s.id)) continue;
           setSessions((v) =>
             v.map((x) =>
               x.id === s.id
@@ -396,7 +420,7 @@ export function Basement({
           );
         }
       } catch (e) {
-        if (alive) error(String(e));
+        if (alive && !stoppedSessions.current.has(pollingId)) error(String(e));
       } finally {
         polling.current = false;
       }
@@ -687,17 +711,7 @@ export function Basement({
             </button>
             <button
               aria-label={`Close ${s.name} session`}
-              onClick={() => {
-                void native("stop_process", { id: s.id })
-                  .then(() => {
-                    setSessions((v) => v.filter((x) => x.id !== s.id));
-                    if (s.id === selected)
-                      setSelected(
-                        current.current.find((x) => x.id !== s.id)?.id ?? 0,
-                      );
-                  })
-                  .catch((e) => error(String(e)));
-              }}
+              onClick={() => void stopSession(s, true)}
             >
               ×
             </button>
@@ -717,27 +731,18 @@ export function Basement({
           style={{ display: s.id === selected ? "flex" : "none" }}
         >
           {s.terminal ? (
-            <Terminal id={s.id} onError={error} />
+            <Terminal
+              id={s.id}
+              onError={(message) => {
+                if (!stoppedSessions.current.has(s.id)) error(message);
+              }}
+            />
           ) : (
             <>
               <div className="process-status">
                 {s.done ? `Exited ${s.code}` : "Running"} ·{" "}
                 {((s.elapsed ?? 0) / 1000).toFixed(1)}s
-                <button
-                  onClick={() => {
-                    void native("stop_process", { id: s.id })
-                      .then(() =>
-                        setSessions((v) =>
-                          v.map((x) =>
-                            x.id === s.id ? { ...x, done: true, code: -1 } : x,
-                          ),
-                        ),
-                      )
-                      .catch((e) => error(String(e)));
-                  }}
-                >
-                  Stop
-                </button>
+                <button onClick={() => void stopSession(s, false)}>Stop</button>
               </div>
               <pre className="process-output" tabIndex={0}>
                 {s.output || "Waiting for output…"}

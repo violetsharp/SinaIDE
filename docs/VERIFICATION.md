@@ -2,7 +2,9 @@
 
 ## 0.5 local checkpoint
 
-On Windows x64, 13 frontend tests, 8 native tests, type checking, native format/Clippy and 10 browser checks passed. Production frontend builds pass. A real external debugpy 1.8.22 adapter exercised launch, a conditional breakpoint, stack/scopes/variables, a watch result, console evaluation, step-over, attach/listen and disconnect against a disposable Python program. Saving/loading a task recipe also passed. No page errors were observed in that workflow. This does not validate a PHP/Xdebug adapter.
+On Windows x64, 13 frontend tests, 8 native tests, type checking, native format/Clippy and 12 browser checks passed. Browser tests include mocked-native update confirmation, cancellation, unsaved-document blocking, invalid-signature state and editing recovery after a failed install; these are not proof of an actual installer upgrade. Production frontend builds pass. The 11 native workflow groups also pass. A real external debugpy 1.8.22 adapter exercised launch, a conditional breakpoint, stack/scopes/variables, a watch result, console evaluation, step-over, attach/listen and disconnect against a disposable Python program. Saving/loading a task recipe also passed. No page errors were observed in that workflow. This does not validate a PHP/Xdebug adapter.
+
+Reproduce the adapter test against a dedicated `tauri dev` window with `SINAIDE_PYTHON` pointing to Python and `SINAIDE_DEBUGPY_ADAPTER` to an installed debugpy adapter directory: `node tests/debug-smoke.mjs`. Do not run against a window containing personal documents. The adapter is an external test tool, not bundled with SinaIDE.
 
 The first attach test used debugpy's connect configuration with a separately started stdio adapter, which is not that adapter's supported connection arrangement. Retesting with the adapter's listen configuration and a connecting debug target passed. No failure is counted as a passed test.
 
