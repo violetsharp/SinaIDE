@@ -1,0 +1,44 @@
+name: macOS 0.5 fallback build
+on:
+  push:
+    branches: [ci/macos-0.5-fallback]
+permissions:
+  contents: read
+jobs:
+  macos:
+    runs-on: macos-15-intel
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ff765c77bf42dfd48c0db8e04ac952aa5981ba86
+      - name: Record exact release source
+        run: git rev-parse HEAD
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - run: rustup target add aarch64-apple-darwin x86_64-apple-darwin
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - run: npm run check:native
+      - run: npx playwright install chromium
+      - run: npm run test:ui
+        env:
+          CI: true
+      - run: npm run tauri build -- --target universal-apple-darwin --bundles dmg
+      - run: tar -czf SinaIDE.app.tar.gz -C src-tauri/target/universal-apple-darwin/release/bundle/macos SinaIDE.app
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SinaIDE-macOS-universal-0.5-unsigned
+          path: |
+            src-tauri/target/**/bundle/dmg/*.dmg
+            SinaIDE.app.tar.gz
+            THIRD_PARTY_NOTICES/**
+          if-no-files-found: error
