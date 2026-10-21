@@ -98,11 +98,27 @@ See [DEPENDENCIES.md](DEPENDENCIES.md) for the initial reuse policy.
 - [x] Initial product and design direction documented
 - [x] Tauri 2 + Rust + React + TypeScript scaffold
 - [x] First expressive desktop-shell prototype
-- [ ] Real project picker and filesystem-backed File Garden
-- [ ] Monaco editor integration and document saving
+- [x] Filesystem-backed File Garden (enter a local folder path; browse directories)
+- [x] Basic text editor with open, dirty-state tracking, and save for existing files
+- [ ] Native folder picker and create/rename/delete file operations
+- [ ] Monaco editor integration
 - [ ] Persistent, draggable/resizable workspace objects
 - [ ] Real terminal/process integration
-- [ ] Theme switching and persisted preferences
+- [ ] Persisted workspace layout, theme, and preferences
 - [ ] LSP, search, and Git integrations
 
 The checked items describe the starter scaffold, not a release-ready IDE.
+
+
+## Current filesystem workflow
+
+The first functional slice uses the existing Rust/Tauri commands for directory listing, text-file reads, and saving an existing file. In the desktop app:
+
+1. Enter a full local folder path in **File Garden** and choose **Open folder**.
+2. Expand folders in the tree and select a text file to open it.
+3. Edit in the Workbench. Unsaved changes are marked; use **Save** or **Ctrl+S**.
+4. **Ctrl+O** focuses the project-path field.
+
+The current editor is a lightweight textarea, not Monaco. Folder paths are entered manually; a native folder-picker dialog, new-file creation, binary-file previews, tabs/multiple open documents, external-change detection, and terminal/debugger integration are not implemented yet. Saving intentionally targets an existing file only.
+
+The browser preview can still show the interface, but native filesystem operations require the Tauri desktop runtime (`npm run tauri dev`).
