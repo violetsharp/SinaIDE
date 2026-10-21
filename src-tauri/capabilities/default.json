@@ -3,5 +3,5 @@
   "identifier": "default",
   "description": "Default capability for the SinaIDE main window.",
   "windows": ["main"],
-  "permissions": ["core:default"]
+  "permissions": ["core:default", "core:window:allow-destroy", "dialog:allow-open", "updater:default"]
 }

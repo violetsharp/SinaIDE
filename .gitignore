@@ -22,3 +22,10 @@ Thumbs.db
 npm-debug.log*
 yarn-debug.log*
 pnpm-debug.log*
+
+# Verification output and generated license bundles
+test-results/
+playwright-report/
+THIRD_PARTY_NOTICES/npm/
+THIRD_PARTY_NOTICES/cargo/
+THIRD_PARTY_NOTICES/DEPENDENCIES.json

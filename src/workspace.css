@@ -1,0 +1,902 @@
+/* Daily tools live inside the original studio's objects, palette and typography. */
+[hidden] {
+  display: none !important;
+}
+html,
+body,
+#root {
+  height: 100%;
+  min-height: 0;
+}
+body {
+  min-width: 900px;
+}
+button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+input,
+select,
+textarea {
+  color: var(--text);
+}
+.sina-app {
+  height: 100vh;
+  min-height: 640px;
+  overflow: hidden;
+  color: var(--text);
+}
+.topbar {
+  height: 60px;
+  gap: 24px;
+}
+.brand-subtitle {
+  font-size: 10px;
+}
+.menu-item {
+  font-size: 13px;
+}
+.world-banner {
+  min-height: 126px;
+  padding: 23px 35px 22px 99px;
+  flex-shrink: 0;
+}
+.world-greeting h1 {
+  font-size: 32px;
+}
+.world-greeting p {
+  font-size: 12px;
+}
+.desktop {
+  min-height: 0;
+  overflow: hidden;
+  padding-bottom: 14px;
+}
+.object-rail {
+  min-height: 0;
+  height: 100%;
+  overflow: auto;
+  gap: 4px;
+  padding-top: 10px;
+}
+.rail-spacer {
+  min-height: 4px;
+}
+.rail-object {
+  padding: 9px 0;
+  flex-shrink: 0;
+}
+.rail-object small {
+  font-size: 9px;
+}
+.workspace.daily-workspace {
+  display: grid;
+  grid-template-columns: var(--garden-width) minmax(300px, 1fr) var(
+      --observatory-width
+    );
+  grid-template-rows: minmax(200px, 1fr) auto;
+  gap: 12px;
+  min-height: 0;
+  align-items: stretch;
+}
+.daily-workspace .garden-window {
+  grid-column: 1;
+  grid-row: 1/3;
+  transform: rotate(-0.18deg);
+  margin: 0;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.daily-workspace .editor-window {
+  grid-column: 2;
+  grid-row: 1;
+  transform: none;
+  min-height: 0;
+}
+.observatory-window {
+  grid-column: 3;
+  grid-row: 1/3;
+  transform: rotate(0.18deg);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  align-self: stretch;
+}
+.basement-window {
+  grid-column: 2;
+  grid-row: 2;
+  max-height: var(--basement-height);
+  min-height: 170px;
+  display: flex;
+  flex-direction: column;
+}
+.window-heading {
+  padding: 12px 13px;
+  flex-shrink: 0;
+}
+.window-heading strong {
+  font-size: 12px;
+}
+.window-heading small {
+  font-size: 10px;
+}
+.heading-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 5px;
+  flex-shrink: 0;
+}
+.heading-actions button,
+.garden-tools button,
+.tool-panel button,
+.basement-content button,
+.tool-actions button,
+.web-preview button,
+.preview-toggle,
+.editor-empty button {
+  border: 1px solid var(--line);
+  background: var(--surface2);
+  border-radius: 7px;
+  padding: 6px 8px;
+  font-size: 11px;
+  color: var(--text);
+}
+.heading-actions button:hover,
+.garden-tools button:hover,
+.tool-panel button:hover,
+.basement-content button:hover {
+  border-color: var(--pink);
+  color: var(--pink);
+}
+.project-path-form input {
+  font-size: 11px;
+}
+.project-path-form label {
+  font-size: 9px;
+}
+.project-chip strong {
+  font-size: 12px;
+}
+.project-chip small {
+  font-size: 10px;
+}
+.garden-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 0 11px 8px;
+}
+.garden-tools button {
+  font-size: 10px;
+  padding: 5px 7px;
+}
+.hidden-toggle {
+  padding: 4px 12px 8px;
+  color: var(--muted);
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.file-list {
+  max-height: none !important;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 2px 7px 12px;
+}
+.file-row {
+  font-size: 11px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+.garden-footer {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-size: 10px;
+}
+.empty-garden {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+}
+.empty-garden > span {
+  font-size: 40px;
+  color: var(--pink);
+  opacity: 0.6;
+}
+.empty-garden > button {
+  border: 0;
+  background: var(--surface2);
+  color: var(--purple);
+  padding: 9px;
+  border-radius: 8px;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.editor-tabs {
+  height: 40px;
+  flex-shrink: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  min-width: 0;
+  padding-left: 5px;
+}
+.document-tab {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  border-bottom: 2px solid transparent;
+  max-width: 240px;
+}
+.document-tab.active {
+  border-bottom-color: var(--pink);
+  background: var(--surface);
+}
+.document-tab button {
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font:
+    11px "DM Mono",
+    monospace;
+  padding: 8px 5px;
+  max-width: 210px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.document-tab.active button {
+  color: var(--text);
+}
+.document-tab button:last-child {
+  font: 15px sans-serif;
+  padding-right: 8px;
+}
+.document-tab button:first-child {
+  padding-left: 10px;
+}
+.preview-toggle {
+  align-self: center;
+  margin-right: 5px;
+  font-size: 10px;
+}
+.workbench-body {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+}
+.editor-mount,
+.monaco-host {
+  position: absolute;
+  inset: 0;
+  min-width: 0;
+  min-height: 0;
+}
+.workbench-body > .editor-empty {
+  height: 100%;
+}
+.editor-empty strong {
+  font-size: 22px;
+}
+.editor-empty > span {
+  font-size: 48px;
+}
+.editor-empty p {
+  font-size: 13px;
+  max-width: 350px;
+}
+.editor-empty small {
+  line-height: 1.7;
+  font-size: 10px;
+  margin-top: 20px;
+  max-width: 360px;
+}
+.editor-empty button {
+  margin-top: 8px;
+}
+.editor-footer {
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+  font-size: 10px;
+  padding: 9px 12px;
+}
+.editor-footer span {
+  white-space: nowrap;
+}
+.breakpoint-dot {
+  background: var(--coral);
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 50%;
+  margin: 6px 4px;
+}
+.tool-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 9px;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+.tool-tabs button {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 10px;
+  padding: 5px 7px;
+  border-radius: 7px;
+}
+.tool-tabs button[aria-pressed="true"] {
+  background: var(--surface3);
+  color: var(--pink);
+}
+.observatory-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+.observatory-art {
+  height: 150px;
+}
+.inspector-section strong {
+  font-size: 12px;
+}
+.inspector-section .muted-text {
+  font-size: 11px;
+  line-height: 1.8;
+}
+.inspector-tags span {
+  font-size: 10px;
+}
+.inspector-action {
+  font-size: 11px;
+  line-height: 1.6;
+}
+.pocket-note {
+  padding: 18px 16px;
+}
+.pocket-note textarea {
+  display: block;
+  width: 100%;
+  min-height: 280px;
+  resize: vertical;
+  background: repeating-linear-gradient(
+    transparent,
+    transparent 29px,
+    var(--line) 30px
+  );
+  border: 0;
+  font:
+    500 17px/30px Fraunces,
+    serif;
+  padding: 12px 0;
+  color: var(--text);
+}
+.pocket-note p {
+  font-size: 10px;
+  color: var(--pink);
+  line-height: 1.7;
+}
+.tool-panel {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  font-size: 11px;
+}
+.tool-panel p {
+  margin: 0;
+  line-height: 1.8;
+}
+.tool-panel label,
+.saved-recipes label,
+.task-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.tool-panel input:not([type="checkbox"]):not([type="range"]),
+.tool-panel textarea,
+.tool-panel select,
+.saved-recipes input,
+.task-form input:not([type="checkbox"]) {
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--bg);
+  color: var(--text);
+  padding: 8px;
+  min-width: 0;
+  width: 100%;
+  font:
+    11px/1.6 "DM Mono",
+    monospace;
+}
+.tool-panel label:has(input[type="checkbox"]),
+.task-form label:has(input[type="checkbox"]) {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+}
+.tool-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.tool-intro {
+  font-size: 11px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.tool-warning {
+  color: var(--yellow);
+  font-size: 11px;
+}
+.result-row {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  gap: 5px;
+  width: 100%;
+  overflow: hidden;
+}
+.result-row strong {
+  font:
+    11px "DM Mono",
+    monospace;
+  overflow-wrap: anywhere;
+}
+.result-row span {
+  white-space: pre-wrap;
+  font-size: 10px;
+  max-height: 70px;
+  overflow: hidden;
+  color: var(--muted);
+}
+.git-file {
+  border-bottom: 1px dashed var(--line);
+  padding-bottom: 10px;
+}
+.git-file .result-row {
+  border: 0;
+  background: transparent;
+  padding-left: 0;
+}
+.git-file .tool-actions {
+  gap: 4px;
+}
+.git-file .tool-actions button {
+  font-size: 10px;
+  padding: 4px 6px;
+}
+.tool-log,
+.diff-view {
+  font:
+    10px/1.7 "DM Mono",
+    monospace;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: var(--bg);
+  border-radius: 7px;
+  padding: 10px;
+  max-height: 350px;
+  overflow: auto;
+}
+.variable {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 8px;
+  overflow-wrap: anywhere;
+}
+.variable code {
+  font-size: 10px;
+}
+.basement-content {
+  overflow: auto;
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.task-presets {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  padding: 8px 10px;
+}
+.task-presets button {
+  font-size: 10px;
+  padding: 5px 7px;
+}
+.task-settings,
+.postgres-settings {
+  padding: 0 10px 8px;
+}
+.task-settings summary,
+.postgres-settings summary {
+  font-size: 11px;
+  color: var(--purple);
+  cursor: pointer;
+  padding: 4px;
+}
+.task-form {
+  display: flex;
+  gap: 8px;
+  align-items: end;
+  flex-wrap: wrap;
+  padding: 9px 0;
+}
+.task-form label {
+  flex: 1;
+  min-width: 120px;
+  font-size: 10px;
+}
+.task-form label:nth-child(2) {
+  flex: 2;
+}
+.task-form input {
+  padding: 6px !important;
+  font-size: 10px !important;
+}
+.basement-content .tool-intro {
+  margin: 5px 0;
+}
+.session-tabs {
+  display: flex;
+  flex-shrink: 0;
+  gap: 4px;
+  padding: 3px 10px;
+  border-top: 1px solid var(--line);
+  overflow: auto;
+  min-height: 34px;
+}
+.session-tabs > div {
+  display: flex;
+  flex-shrink: 0;
+}
+.session-tabs button {
+  border: 0 !important;
+  background: transparent !important;
+  font-size: 10px !important;
+}
+.session-tabs button[aria-selected="true"] {
+  color: var(--pink);
+  border-bottom: 2px solid var(--pink) !important;
+  border-radius: 0;
+}
+.session-view {
+  flex: 1;
+  min-height: 150px;
+  flex-direction: column;
+  position: relative;
+  flex-shrink: 0;
+}
+.terminal-host {
+  min-height: 170px;
+  height: 220px;
+  padding: 4px 10px 10px;
+  background: #211b2c;
+}
+.process-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 10px;
+  font-size: 10px;
+  color: var(--muted);
+}
+.process-status button {
+  margin-left: auto;
+  padding: 3px 8px;
+}
+.process-output {
+  font:
+    11px/1.8 "DM Mono",
+    monospace;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 0;
+  padding: 5px 12px 12px;
+  flex: 1;
+  overflow: auto;
+  min-height: 130px;
+  max-height: 300px;
+}
+.basement-empty {
+  font-size: 11px;
+  color: var(--muted);
+  padding: 15px;
+}
+.global-message {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 0 25px 10px 90px;
+  padding: 10px 13px;
+  border: 1px solid var(--coral);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--coral);
+  font-size: 12px;
+  flex-shrink: 0;
+  max-height: 100px;
+  overflow: auto;
+}
+.global-message span {
+  flex: 1;
+  white-space: pre-wrap;
+}
+.global-message button {
+  background: transparent;
+  border: 0;
+  color: var(--text);
+  font-size: 11px;
+}
+.statusbar {
+  flex-shrink: 0;
+  height: 31px;
+  font-size: 10px;
+}
+.statusbar button {
+  background: none;
+  border: 0;
+  color: var(--purple);
+  font: inherit;
+}
+.web-preview {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.web-preview form {
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  background: var(--surface2);
+}
+.web-preview input {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 6px;
+  font-size: 12px;
+}
+.web-preview iframe {
+  border: 0;
+  flex: 1;
+  min-height: 0;
+  background: white;
+}
+.sina-dialog {
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 19px;
+  padding: 28px;
+  max-width: 500px;
+  width: calc(100vw - 40px);
+  box-shadow: 0 30px 100px #0008;
+}
+.sina-dialog::backdrop {
+  background: #08060bb3;
+  backdrop-filter: blur(5px);
+}
+.dialog-flower {
+  font-size: 30px;
+  color: var(--pink);
+}
+.sina-dialog h2 {
+  font:
+    500 25px Fraunces,
+    serif;
+}
+.sina-dialog p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.sina-dialog input {
+  width: 100%;
+  background: var(--bg);
+  color: var(--text);
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 13px;
+}
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 7px;
+  margin-top: 22px;
+}
+.dialog-actions button {
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--surface2);
+  color: var(--text);
+  font-size: 12px;
+}
+.dialog-actions .primary {
+  background: var(--surface3);
+  color: var(--pink);
+  border-color: var(--purple);
+}
+.command-palette > button.highlighted {
+  background: var(--surface3);
+}
+.palette-title button {
+  background: none;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  padding: 4px;
+  border-radius: 5px;
+  font-size: 10px;
+}
+.command-palette {
+  max-height: 70vh;
+  overflow: auto;
+}
+.command-palette button {
+  font-size: 12px;
+}
+.palette-scrim {
+  padding-top: 12vh;
+}
+.focus-world .world-banner {
+  min-height: 60px;
+  padding-top: 9px;
+  padding-bottom: 9px;
+}
+.focus-world h1 {
+  font-size: 22px;
+  margin: 0;
+}
+.focus-world .world-greeting > p,
+.focus-world .eyebrow,
+.focus-world .weather-widget,
+.focus-world .banner-doodle {
+  display: none;
+}
+.focus-world .daily-workspace {
+  grid-template-columns: 0 minmax(300px, 1fr) 0;
+  column-gap: 0;
+}
+.swap-sides .daily-workspace {
+  grid-template-columns: var(--observatory-width) minmax(300px, 1fr) var(
+      --garden-width
+    );
+}
+.swap-sides .garden-window {
+  grid-column: 3;
+}
+.swap-sides .observatory-window {
+  grid-column: 1;
+}
+.quiet-motion *,
+.quiet-motion *::before,
+.quiet-motion *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+.theme-berry {
+  --bg: #1c151e;
+  --surface: #251c28;
+  --surface2: #302332;
+  --surface3: #402c3e;
+  --line: #564051;
+  --text: #fce9ee;
+  --muted: #c1a2b8;
+  --pink: #ffb0c7;
+  --purple: #e0b6e5;
+  --mint: #bad8bf;
+  background: radial-gradient(ellipse at 50% 0%, #492c40 0%, var(--bg) 55%);
+}
+@media (max-width: 1200px) {
+  .daily-workspace {
+    --garden-width: 220px;
+    --observatory-width: 250px;
+  }
+  .topbar {
+    gap: 12px;
+    padding: 0 18px;
+  }
+  .topbar .brand-lockup {
+    min-width: 140px;
+  }
+  .world-banner {
+    padding-left: 90px;
+  }
+  .daily-workspace .window-heading {
+    gap: 6px;
+    padding: 10px;
+  }
+  .heading-actions {
+    gap: 3px;
+  }
+  .heading-actions button {
+    font-size: 10px;
+    padding: 5px;
+  }
+  .window-heading small {
+    font-size: 9px;
+  }
+  .weather-widget {
+    padding: 9px;
+  }
+  .desktop {
+    padding-right: 12px;
+  }
+}
+@media (max-height: 800px) {
+  .world-banner {
+    min-height: 100px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+  .world-greeting h1 {
+    font-size: 27px;
+  }
+  .basement-window {
+    max-height: 220px;
+  }
+  .window-heading {
+    padding-top: 9px;
+    padding-bottom: 9px;
+  }
+  .object-rail {
+    gap: 0;
+  }
+  .rail-object {
+    padding: 6px 0;
+  }
+  .topbar {
+    height: 54px;
+  }
+}
+.update-letter,
+.saved-recipes,
+.debug-breakpoint {
+  padding: 12px;
+  margin: 10px 0 16px;
+  border: 1px dashed var(--border, #60456e);
+  border-radius: 12px;
+}
+.update-letter h3,
+.saved-recipes h3 {
+  font-family: "Fraunces", serif;
+}
+.update-letter small,
+.debug-breakpoint small,
+.saved-recipes small {
+  display: block;
+  line-height: 1.6;
+  opacity: 0.8;
+}
+.tool-panel fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}

@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "SinaIDE",
-  "version": "0.1.0",
+  "version": "0.5.0",
   "identifier": "studio.sinaide.desktop",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -23,11 +23,21 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self'; img-src 'self' asset: http://asset.localhost data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; connect-src ipc: http://ipc.localhost"
+      "csp": "default-src 'self'; script-src 'self'; worker-src 'self' blob:; img-src 'self' asset: http://asset.localhost data:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost; frame-src http://127.0.0.1:* http://localhost:*"
+    }
+  },
+  "plugins": {
+    "updater": {
+      "requireSignedVersion": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDcwRjg2QzY5ODM5RDk5OTMKUldTVG1aMkRhV3o0Y0J6c0dWYytoVDFXeGd0UmIwbDdUUi9ObGE3VWhoTUE1TGZSb1duTWZOeWgK",
+      "endpoints": ["https://github.com/loveyydoll/SinaIDE-releases/releases/latest/download/latest.json"],
+      "windows": {"installMode": "passive"}
     }
   },
   "bundle": {
     "active": true,
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"],
+    "resources": ["../THIRD_PARTY_NOTICES/"],
     "targets": "all",
     "category": "DeveloperTool",
     "shortDescription": "A strange little creative world for making software.",

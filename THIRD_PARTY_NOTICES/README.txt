@@ -1,0 +1,1 @@
+SinaIDE third-party notices. Generated from package-lock.json and Cargo.lock. Includes direct and transitive Rust dependencies for supported targets. SinaIDE itself has not selected a project license. See DEPENDENCIES.md for the reuse register.
