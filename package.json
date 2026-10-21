@@ -7,7 +7,7 @@
     "notices": "node scripts/notices.mjs",
     "prebuild": "npm run notices",
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && node --max-old-space-size=6144 node_modules/vite/bin/vite.js build",
     "preview": "vite preview",
     "tauri": "tauri",
     "test": "vitest run src",

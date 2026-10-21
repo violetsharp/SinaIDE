@@ -2,7 +2,7 @@ name: Desktop checks and installers
 on:
   pull_request:
   push:
-    branches: [main, feat/personal-ide-workspace]
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read

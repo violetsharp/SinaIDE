@@ -23,6 +23,8 @@ The first sandboxed Windows atomic-save test encountered filesystem virtualizati
 
 ## Boundaries
 
+The first macOS CI run passed frontend/Rust/browser checks but exhausted Node's default heap during the repeated production frontend build inside installer packaging. The build command now gives Vite a 6 GiB maximum heap on every platform. PR workflows cover feature branches; pushes to main cover merged code, avoiding duplicate push/PR installer jobs. Consult the latest PR-head run for the corrected packaging result.
+
 - The NSIS package was built; installer execution and upgrade/uninstall behavior have not been tested.
 - macOS native compilation/packaging is delegated to the repository workflow. Physical Intel/Apple Silicon launch tests are not performed locally. Consult the workflow for the exact commit; a configured workflow is not a passing run.
 - No code signing, Apple notarization or update service is configured. No public release or main-branch merge is performed automatically.
