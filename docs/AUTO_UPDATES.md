@@ -11,7 +11,7 @@ Future publishing is **gated**, at the owner's request. The signing key remains 
 1. Run desktop checks for the final commit on both platforms. Build the Windows NSIS installer and universal Mac DMG/app archive using the existing desktop workflow.
 2. Download the artifacts and verify their GitHub artifact digests. Sign the Windows setup EXE and Mac `.app.tar.gz` locally with the retained key:
    `npm run tauri signer sign -- --private-key-path <private-key-file> --app-version 0.5.0 <artifact>`
-3. Gather one EXE, one DMG, one Mac archive and the two `.sig` sidecars in an input folder. Run `node scripts/collect-release.mjs <input> <output> 0.5.0`. This refuses incomplete/ambiguous sets and writes the manifest and SHA-256 sums.
+3. Gather one EXE, one DMG, one Mac archive and the two `.sig` sidecars in an input folder. Run `node scripts/collect-release.mjs <input> <output> 0.5.0`. Use a new or empty output folder. This refuses incomplete/ambiguous sets, empty assets and nonempty output folders, then writes the manifest and SHA-256 sums. Signature sidecars must be present, but the collector itself does not cryptographically verify them; signing and updater verification remain separate steps.
 4. Upload all output files to a draft release in the **downloads repository**. Publish only after both platform builds and tests succeed. Do not attach source archives from the private repo. The downloads repo's automatically generated source archives contain only its public readme.
 5. Verify the public feed and downloads, and check for updates from an installed build. A complete upgrade test must use an older updater-enabled version; 0.2 cannot update itself.
 

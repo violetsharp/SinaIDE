@@ -6,7 +6,7 @@
 
 ## Versioned releases going forward
 
-After the 0.5.1 PR is merged and both platform jobs pass, development installers will appear at [repository releases](https://github.com/violetsharp/SinaIDE/releases). Download `-setup.exe` for Windows or universal `.dmg` for macOS. Do not download the automatically generated source-code archives to install the app. Use checksums from the same release to check downloaded bytes.
+Version [0.5.1 is now available](https://github.com/violetsharp/SinaIDE/releases/tag/v0.5.1): both hosted platform jobs and development publication passed. Future versions appear at [repository releases](https://github.com/violetsharp/SinaIDE/releases) after merging and passing the same checks. Download `-setup.exe` for Windows or universal `.dmg` for macOS. Do not download the automatically generated source-code archives to install the app. Use checksums from the same release to check downloaded bytes.
 
 At this audit, the separate [signed downloads channel](https://github.com/loveyydoll/SinaIDE-releases/releases) has no published releases. Its updater feed is not a working installation path yet. Development prereleases do not enable in-app updates. OS publisher signing and notarization are not configured.
 

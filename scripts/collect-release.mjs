@@ -13,7 +13,9 @@ function walk(dir) {
   }
 }
 walk(input);
-fs.mkdirSync(output, { recursive: true });
+// A reused output directory can otherwise publish stale assets alongside a new feed.
+if (fs.existsSync(output) && fs.readdirSync(output).length !== 0)
+  throw Error("Release output must be empty");
 function one(suffix) {
   const found = files.filter((p) => p.endsWith(suffix));
   if (found.length !== 1)
@@ -41,6 +43,10 @@ const manifest = {
   },
 };
 const assets = [windows, `${windows}.sig`, mac, `${mac}.sig`, dmg];
+for (const file of assets) {
+  if (fs.statSync(file).size === 0) throw Error(`Empty release asset: ${file}`);
+}
+fs.mkdirSync(output, { recursive: true });
 for (const file of assets)
   fs.copyFileSync(file, path.join(output, path.basename(file)));
 fs.writeFileSync(
