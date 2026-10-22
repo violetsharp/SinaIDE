@@ -32,3 +32,9 @@ Local audit validation is performed on Linux with Node 24. The new archive regre
 3. On a disposable installed older updater-enabled version (not 0.2), verify download/signature/version, unsaved-edit blocking, owned-process shutdown, install, relaunch, version and settings/project preservation. Check failure/cancel paths. Signature-only and browser-mock tests do not close this item.
 4. Launch the packaged app on physical Apple Silicon and Intel Macs, recording OS/architecture, install warnings, save, PHP preview and terminal behavior. Record signing/notarization accurately.
 5. Before publishing, verify the feed and downloadable bytes. Keep the existing signing-key authorization gate; no secrets, certificates or publishing were configured by this audit.
+
+## PR #4 follow-up — 0.5.1
+
+[First PR #4 run](https://github.com/violetsharp/SinaIDE/actions/runs/39748446447) confirmed that requesting both `dmg,app` retains the app. macOS passed tests and packaging, then failed because this PR used the wrong `lipo` argument order. Windows failed the new archive success test because CRLF output left carriage returns in parsed names. The follow-up places the executable before `-verify_arch` and splits archive listings on CRLF or LF. Corrected platform results are pending; no successful final gate is claimed. Linux reruns passed 4 archive tests and 13 frontend tests.
+
+The user requested documentation and a new release even for minimal changes. Version 0.5.1 adds AGENTS.md, CHANGELOG.md, direct-install guidance and gated unsigned development prereleases from main. The private updater key is not needed for manual-install development prereleases; its separate authorization gate remains. No 0.5.1 release exists until the corrected change is merged and both jobs pass.

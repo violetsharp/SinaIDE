@@ -33,7 +33,7 @@ jobs:
           REF_TYPE: ${{ github.ref_type }}
           REF_NAME: ${{ github.ref_name }}
         run: |
-          node --input-type=module -e 'import fs from "node:fs"; const base=JSON.parse(fs.readFileSync("package.json")).version; const version=process.env.REF_TYPE==="tag" ? process.env.REF_NAME.replace(/^v/,"") : base.split(".").slice(0,2).join(".")+"."+process.env.GITHUB_RUN_NUMBER; if(!/^\d+\.\d+\.\d+$/.test(version)) throw Error("Invalid version"); fs.appendFileSync(process.env.GITHUB_OUTPUT,`version=${version}\n`);'
+          node --input-type=module -e 'import fs from "node:fs"; const base=JSON.parse(fs.readFileSync("package.json")).version; const version=process.env.REF_TYPE==="tag" ? process.env.REF_NAME.replace(/^v/,"") : base; if(!/^\d+\.\d+\.\d+$/.test(version)) throw Error("Invalid version"); fs.appendFileSync(process.env.GITHUB_OUTPUT,`version=${version}\n`);'
   build:
     needs: gate
     if: needs.gate.outputs.enabled == 'true'

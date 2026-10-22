@@ -19,3 +19,14 @@ fs.writeFileSync(
     .readFileSync(cargo, "utf8")
     .replace(/^(version = ")[^"]+/m, `$1${version}`),
 );
+
+// Keep the local package lock entry in sync without needing Cargo installed.
+const cargoLock = "src-tauri/Cargo.lock";
+const lock = fs.readFileSync(cargoLock, "utf8");
+const updatedLock = lock.replace(
+  /(\[\[package\]\]\nname = "sinaide"\nversion = ")[^"]+("\n)/,
+  `$1${version}$2`,
+);
+if (!updatedLock.includes(`name = "sinaide"\nversion = "${version}"`))
+  throw Error("Cannot locate SinaIDE's Cargo.lock package entry");
+fs.writeFileSync(cargoLock, updatedLock);

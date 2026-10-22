@@ -9,7 +9,7 @@ permissions:
   contents: read
 concurrency:
   group: desktop-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   desktop:
     strategy:
@@ -55,7 +55,7 @@ jobs:
       - name: Preserve macOS app for locally signed updater distribution
         if: runner.os == 'macOS'
         run: |
-          lipo -verify_arch arm64 x86_64 src-tauri/target/universal-apple-darwin/release/bundle/macos/SinaIDE.app/Contents/MacOS/sinaide
+          lipo src-tauri/target/universal-apple-darwin/release/bundle/macos/SinaIDE.app/Contents/MacOS/sinaide -verify_arch arm64 x86_64
           plutil -lint src-tauri/target/universal-apple-darwin/release/bundle/macos/SinaIDE.app/Contents/Info.plist
           node scripts/archive-macos-app.mjs src-tauri/target/universal-apple-darwin/release/bundle/macos SinaIDE.app.tar.gz
       - name: Preserve installer and dependency notices
@@ -69,3 +69,35 @@ jobs:
             SinaIDE.app.tar.gz
             THIRD_PARTY_NOTICES/**
           if-no-files-found: error
+
+  development-release:
+    needs: desktop
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: SinaIDE-*-unsigned
+          path: release-input
+      - name: Prepare versioned development downloads
+        shell: bash
+        run: |
+          node --input-type=module -e 'import fs from "node:fs"; const version=JSON.parse(fs.readFileSync("package.json")).version; fs.appendFileSync(process.env.GITHUB_ENV, `RELEASE_VERSION=${version}\n`);'
+          mkdir release-output
+          find release-input -type f \( -name '*.exe' -o -name '*.dmg' -o -name '*.app.tar.gz' \) -exec cp {} release-output/ \;
+          test "$(find release-output -name '*.exe' | wc -l)" -eq 1
+          test "$(find release-output -name '*.dmg' | wc -l)" -eq 1
+          test "$(find release-output -name '*.app.tar.gz' | wc -l)" -eq 1
+          cp CHANGELOG.md release-output/
+          (cd release-output && sha256sum * > SHA256SUMS.txt)
+      - name: Publish development release after both platforms pass
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          gh release create "v$RELEASE_VERSION" release-output/* --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "SinaIDE $RELEASE_VERSION (development)" --prerelease --notes-file docs/DEVELOPMENT_RELEASE.md

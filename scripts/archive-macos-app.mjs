@@ -25,7 +25,7 @@ if (fs.existsSync(archive))
 try {
   execFileSync("tar", ["-czf", path.resolve(archive), "-C", bundleRoot, app]);
   const entries = new Set(
-    execFileSync("tar", ["-tzf", archive], { encoding: "utf8" }).split("\n"),
+    execFileSync("tar", ["-tzf", archive], { encoding: "utf8" }).split(/\r?\n/),
   );
   for (const entry of required) {
     if (!entries.has(entry)) throw Error(`Archive is missing ${entry}`);
