@@ -1,7 +1,7 @@
 {
   "name": "sinaide",
   "private": true,
-  "version": "0.5.1",
+  "version": "0.5.2",
   "type": "module",
   "scripts": {
     "notices": "node scripts/notices.mjs",
@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "test": "vitest run src",
-    "test:release": "node --test tests/release-artifacts.test.mjs",
+    "test:release": "node --test tests/release-artifacts.test.mjs tests/collect-release.test.mjs",
     "test:ui": "playwright test",
     "test:desktop": "node tests/native-smoke.mjs",
     "check:native": "cargo fmt --manifest-path src-tauri/Cargo.toml -- --check && cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings && cargo test --manifest-path src-tauri/Cargo.toml"
