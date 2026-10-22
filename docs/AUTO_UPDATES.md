@@ -17,7 +17,7 @@ Future publishing is **gated**, at the owner's request. The signing key remains 
 
 ## Enabling later automation
 
-The `Signed app updates` workflow listens to main pushes, version tags and manual dispatch. With no secrets it reports the gate and skips publishing. It never uses fork/PR secrets. Once configured, both platforms run tests and build before one publishing job creates and then publishes the release. For ordinary main pushes it uses the package's major/minor plus the monotonically increasing workflow run number, so each release has a newer version. Stable `vX.Y.Z` tags use that exact version; choose versions newer than all previously published builds. Never overwrite a published version. Concurrency is serialized.
+The `Signed app updates` workflow listens to main pushes, version tags and manual dispatch. With no secrets it reports the gate and skips publishing. It never uses fork/PR secrets. Once configured, both platforms run tests and build before one publishing job creates and then publishes the release. For ordinary main pushes it uses the committed package version. Every completed change set must bump that version, including documentation-only changes (see AGENTS.md and CHANGELOG.md). Stable `vX.Y.Z` tags use that exact version; choose versions newer than all previously published builds. Never overwrite a published version. Concurrency is serialized.
 
 Required Actions secrets in the private source repo:
 
@@ -33,3 +33,5 @@ The release build accepts `WINDOWS_SIGN_COMMAND` as an Actions variable using Ta
 For Apple builds, provide `APPLE_CERTIFICATE`, `APPLE_CERTIFICATE_PASSWORD`, the `APPLE_SIGNING_IDENTITY` variable, and notarization secrets `APPLE_ID`, `APPLE_PASSWORD`, `APPLE_TEAM_ID`. The workflow passes them only to the native build. Verify the resulting signature/notarization with Apple tooling before claiming publisher-verified distribution. No Apple or Windows credentials have been configured for 0.5.
 
 Official references: [Tauri updater](https://v2.tauri.app/plugin/updater/), [Windows signing](https://v2.tauri.app/distribute/sign/windows/), [macOS signing](https://v2.tauri.app/distribute/sign/macos/).
+
+Unsigned development prereleases are published separately in the source repository by the desktop workflow after both platform jobs succeed. They contain manual-install downloads and never write the signed updater feed. See [INSTALL_WITHOUT_BUILDING.md](INSTALL_WITHOUT_BUILDING.md).

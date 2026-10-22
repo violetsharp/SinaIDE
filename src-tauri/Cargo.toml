@@ -1,6 +1,6 @@
 [package]
 name = "sinaide"
-version = "0.5.0"
+version = "0.5.1"
 description = "A strange little creative world for making software."
 authors = ["SinaIDE"]
 edition = "2021"
