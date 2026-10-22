@@ -21,7 +21,7 @@ jobs:
             bundle: nsis
           - os: macos-latest
             target: universal-apple-darwin
-            bundle: dmg
+            bundle: dmg,app
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -40,6 +40,7 @@ jobs:
           workspaces: src-tauri -> target
       - run: npm ci
       - run: npm test
+      - run: npm run test:release
       - run: npm run build
       - run: cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
       - run: cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
@@ -53,7 +54,10 @@ jobs:
         run: npm run tauri build -- --target ${{ matrix.target }} --bundles ${{ matrix.bundle }}
       - name: Preserve macOS app for locally signed updater distribution
         if: runner.os == 'macOS'
-        run: tar -czf SinaIDE.app.tar.gz -C src-tauri/target/universal-apple-darwin/release/bundle/macos SinaIDE.app
+        run: |
+          lipo -verify_arch arm64 x86_64 src-tauri/target/universal-apple-darwin/release/bundle/macos/SinaIDE.app/Contents/MacOS/sinaide
+          plutil -lint src-tauri/target/universal-apple-darwin/release/bundle/macos/SinaIDE.app/Contents/Info.plist
+          node scripts/archive-macos-app.mjs src-tauri/target/universal-apple-darwin/release/bundle/macos SinaIDE.app.tar.gz
       - name: Preserve installer and dependency notices
         uses: actions/upload-artifact@v4
         with:

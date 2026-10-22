@@ -1,5 +1,7 @@
 # SinaIDE verification record
 
+For the commit-specific CI audit and remaining release blockers, see [RELEASE_GATE_AUDIT.md](RELEASE_GATE_AUDIT.md).
+
 ## 0.5 local checkpoint
 
 On Windows x64, 13 frontend tests, 8 native tests, type checking, native format/Clippy and 12 browser checks passed. Browser tests include mocked-native update confirmation, cancellation, unsaved-document blocking, invalid-signature state and editing recovery after a failed install; these are not proof of an actual installer upgrade. Production frontend builds pass. The 11 native workflow groups also pass. A real external debugpy 1.8.22 adapter exercised launch, a conditional breakpoint, stack/scopes/variables, a watch result, console evaluation, step-over, attach/listen and disconnect against a disposable Python program. Saving/loading a task recipe also passed. No page errors were observed in that workflow. This does not validate a PHP/Xdebug adapter.

@@ -64,6 +64,7 @@ jobs:
         env:
           RELEASE_VERSION: ${{ needs.gate.outputs.version }}
       - run: npm test
+      - run: npm run test:release
       - run: npm run build
       - run: npm run check:native
       - run: npx playwright install chromium
