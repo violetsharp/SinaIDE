@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.3 — 2026-10-22 (pending CI and merge)
+
+- Replace the short README with installation instructions, workspace features, language-support levels, external-tool requirements, development commands and verification limits. Preserve the SinalIDE identity while explaining current SinaIDE artifact names.
+- Link the published 0.5.1 development installers and distinguish them from the gated signed-updater channel.
+- Validation: checked relative README links, version consistency and whitespace. Documentation-only change; no new runtime coverage claimed.
+
 ## 0.5.2 — 2026-10-22 (pending CI and merge)
 
 - Reject nonempty release output directories so stale installers cannot be included in a new manifest/checksum set.
